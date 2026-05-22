@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DH Pharmacy Management System</title>
+<style>
+:root{
+  --blue:#1d4ed8;
+  --green:#16a34a;
+  --white:#ffffff;
+  --bg:#eff6ff;
+  --danger:#dc2626;
+  --warning:#f59e0b;
+}
+body{
+    font-family:Arial,sans-serif;
+    background:var(--bg);
+    margin:20px;
+}
+.card{
+    background:var(--white);
+    padding:20px;
+    margin:15px 0;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    border-top:5px solid var(--green);
+}
+.hidden{display:none;}
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    background:var(--blue);
+    color:white;
+    cursor:pointer;
+}
+button:hover{background:#16a34a;}
+input,select{
+    padding:10px;
+    margin:5px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+}
+th{
+    background:#2563eb;
+    color:white;
+}
+.total-box{
+    background:#16a34a;
+    color:white;
+    padding:15px;
+    margin-top:10px;
+    border-radius:10px;
+    font-weight:bold;
+    text-align:center;
+}
+.delete-btn{
+    background:red;
+}
+.alert{
+    padding:12px;
+    border-radius:8px;
+    margin:8px 0;
+    color:white;
+    font-weight:bold;
+}
+
+.alert-danger{
+    background:var(--danger);
+}
+
+.alert-warning{
+    background:var(--warning);
+}
+
+.alert-success{
+    background:var(--green);
+}
+.whatsapp-btn{
+    background:#25D366;
+    color:white;
+    padding:8px 12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.whatsapp-btn:hover{
+    background:#128C7E;
+}
+</style>
+</head>
+<body>
+
+<div id="loginSection" class="card" style="max-width:400px;margin:auto;">
+<h2>DH Pharmacy Login</h2>
+<input id="email" type="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+</div>
+
+<div id="appSection" class="hidden">
+
+<button onclick="logout()">
+Logout
+</button>
+
+<div class="card">
+<div style="text-align:center;">
+    <img src="logo.jpeg" style="width:140px;">
+    <h1>DH Pharmacy Management System</h1>
+</div>
+
+<p style="text-align:center;font-weight:bold;color:#16a34a;">
+    Welcome Admin
+</p>
+
+<div style="text-align:center;margin-top:15px;">
+
+    <button onclick="showPage('dashboardPage')">
+        Dashboard
+    </button>
+
+    <button onclick="showPage('analyticsPage')">
+        Smart Stock Analytics
+    </button>
+
+</div>
+</div>
+
+<div id="dashboardPage">
+
+<div class="card">
+<h3>Add / Edit Product</h3>
+<input id="name" placeholder="Drug Name">
+<input id="category" placeholder="Category">
+<input id="buy" type="number" placeholder="Buy Price">
+<input id="sell" type="number" placeholder="Sell Price">
+<input id="stock" type="number" placeholder="Stock">
+<input id="expiry" type="date">
+<button onclick="addProduct()">Save Product</button>
+</div>
+
+<div id="alertsArea" class="card">
+<h3>Alerts</h3>
+</div>
+
+<div class="card">
+<h3>Inventory</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Category</th>
+<th>Buy</th>
+<th>Sell</th>
+<th>Stock</th>
+<th>Expiry</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="productTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>POS Sales</h3>
+<select id="saleProduct"></select>
+<input id="saleQty" type="number" value="1">
+<input id="customerCash" type="number" placeholder="Customer Cash">
+<button onclick="sellProduct()">Complete Sale</button>
+</div>
+
+<div class="card">
+<h3>Sales Reports</h3>
+<p>Daily Sales: <span id="dailySales">0</span></p>
+<p>Weekly Sales: <span id="weeklySales">0</span></p>
+<p>Monthly Sales: <span id="monthlySales">0</span></p>
+<p>Stock Value: <span id="stockValue">0</span></p>
+<p>Potential Revenue: <span id="potentialRevenue">0</span></p>
+<p>Gross Profit: <span id="grossProfit">0</span></p>
+</div>
+
+<div class="card">
+<h3>Sales History</h3>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Product</th>
+<th>Qty</th>
+<th>Total</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="salesTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>Backup / Restore</h3>
+<button onclick="backupData()">Backup Data</button>
+<input type="file" onchange="restoreData(event)">
+</div>
+
+<div id="receiptArea" class="card" style="text-align:center;">
+<img src="logo.jpeg" style="width:90px;">
+<h2>DH Pharmacy Receipt</h2>
+<div id="receiptContent"></div>
+<button onclick="window.print()">Print Receipt</button>
+</div>
+
+<div class="card">
+<h3>Receipt</h3>
+<button onclick="window.print()">Print Receipt</button>
+</div>
+</div>
+
+<div id="analyticsPage" class="hidden">
+
+<div class="card">
+<h2>Smart Stock Analytics</h2>
+<p>
+Advanced pharmacy inventory intelligence dashboard
+</p>
+</div>
+
+<div class="card">
+<h3>Fast Moving Medicines</h3>
+<table>
+<thead>
+<tr>
+<th>Medicine</th>
+<th>Total Sold</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="fastMovingTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>Slow Moving Medicines</h3>
+<table>
+<thead>
+<tr>
+<th>Medicine</th>
+<th>Total Sold</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="slowMovingTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>Purchase Recommendations</h3>
+<table>
+<thead>
+<tr>
+<th>Medicine</th>
+<th>Current Stock</th>
+<th>Estimated Monthly Sales</th>
+<th>Recommended Purchase</th>
+<th>Stockout Risk</th>
+</tr>
+</thead>
+<tbody id="recommendationTable"></tbody>
+</table>
+</div>
+
+<div class="card">
+<h3>Stock Prediction Alerts</h3>
+<div id="predictionAlerts"></div>
+
+<div style="margin-top:15px;">
+    <button class="whatsapp-btn"
+        onclick="sendWhatsAppAlerts()">
+
+        Send WhatsApp Alerts
+    </button>
+</div>
+</div>
+
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC9cbTiAZ2dZe-YBXhFRVhEmzgpR956Mog",
+  authDomain: "dh-pharmacy-c22bd.firebaseapp.com",
+  projectId: "dh-pharmacy-c22bd",
+  storageBucket: "dh-pharmacy-c22bd.firebasestorage.app",
+  messagingSenderId: "294341883105",
+  appId: "1:294341883105:web:464ba11d89849d115d33a0"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+window.db = db;
+window.auth = auth;
+
+window.firebaseAuthFns = {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+};
+
+window.db = db;
+window.firebaseFns = {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc
+};
+</script>
+
+<script>
+let products = [];
+let sales = [];
+let editIndex = null;
+let editDocId = null;
+const pharmacyWhatsAppNumber = "255672911065";
+
+function showPage(pageId){
+
+    document.getElementById('dashboardPage')
+        .classList.add('hidden');
+
+    document.getElementById('analyticsPage')
+        .classList.add('hidden');
+
+    document.getElementById(pageId)
+        .classList.remove('hidden');
+
+    if(pageId === 'analyticsPage'){
+        generateAnalytics();
+    }
+}
+
+async function login(){
+
+    const email =
+        document.getElementById('email').value;
+
+    const password =
+        document.getElementById('password').value;
+
+    console.log("Trying login:", email);
+
+    const { signInWithEmailAndPassword } =
+        window.firebaseAuthFns;
+
+    try{
+
+        const userCredential =
+            await signInWithEmailAndPassword(
+                window.auth,
+                email,
+                password
+            );
+
+        console.log("SUCCESS:", userCredential.user);
+
+        alert("Login successful");
+
+    }catch(error){
+
+        console.log(error);
+
+        alert(error.code + " : " + error.message);
+    }
+}
+
+window.addEventListener('load', () => {
+
+    const { onAuthStateChanged } =
+        window.firebaseAuthFns;
+
+    console.log("Firebase Loaded");
+
+    onAuthStateChanged(window.auth, async (user)=>{
+
+        if(user){
+
+            document.getElementById('loginSection')
+                .classList.add('hidden');
+
+            document.getElementById('appSection')
+                .classList.remove('hidden');
+
+            await loadProducts();
+            await loadSales();
+
+        }else{
+
+            document.getElementById('loginSection')
+                .classList.remove('hidden');
+
+            document.getElementById('appSection')
+                .classList.add('hidden');
+        }
+    });
+
+});
+
+async function logout(){
+
+    const { signOut } =
+        window.firebaseAuthFns;
+
+    await signOut(window.auth);
+}
+
+async function addProduct(){
+    const { collection, addDoc, doc, updateDoc } = window.firebaseFns;
+
+    const product = {
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        buy: Number(document.getElementById('buy').value),
+        sell: Number(document.getElementById('sell').value),
+        stock: Number(document.getElementById('stock').value),
+        expiry: document.getElementById('expiry').value
+    };
+
+    if(editDocId){
+        await updateDoc(doc(window.db, "products", editDocId), product);
+        editDocId = null;
+    } else {
+        await addDoc(collection(window.db, "products"), product);
+    }
+
+    clearForm();
+    loadProducts();
+}
+
+function clearForm(){
+    document.getElementById('name').value = '';
+    document.getElementById('category').value = '';
+    document.getElementById('buy').value = '';
+    document.getElementById('sell').value = '';
+    document.getElementById('stock').value = '';
+    document.getElementById('expiry').value = '';
+}
+
+async function loadProducts(){
+    const { collection, getDocs } = window.firebaseFns;
+
+    const querySnapshot = await getDocs(collection(window.db, "products"));
+    products = [];
+
+    querySnapshot.forEach((docSnap) => {
+        products.push({
+            id: docSnap.id,
+            ...docSnap.data()
+        });
+    });
+
+    let alertsHTML = '';
+    let html = '';
+    let options = '';
+    let stockValue = 0;
+    let potentialRevenue = 0;
+
+    products.forEach((p,i)=>{
+	const today = new Date();
+let daysLeft = null;
+
+if (p.expiry) {
+    const expiryDate = new Date(p.expiry);
+    daysLeft = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+}
+
+if (p.stock <= 5) {
+    alertsHTML += `<div class="alert alert-warning">
+        Low Stock Alert: ${p.name} imebaki ${p.stock}
+    </div>`;
+}
+
+if (daysLeft !== null && daysLeft <= 30 && daysLeft >= 0) {
+    alertsHTML += `<div class="alert alert-danger">
+        Expiry Alert: ${p.name} ina expire ndani ya siku ${daysLeft}
+    </div>`;
+}
+
+if (daysLeft !== null && daysLeft < 0) {
+    alertsHTML += `<div class="alert alert-danger">
+        Expired: ${p.name} already expired
+    </div>`;
+}
+        html += `
+        <tr>
+            <td>${p.name}</td>
+            <td>${p.category}</td>
+            <td>${p.buy}</td>
+            <td>${p.sell}</td>
+            <td>${p.stock}</td>
+            <td>${p.expiry}</td>
+            <td>
+                <button onclick="editProduct(${i})">Edit</button>
+                <button class="delete-btn" onclick="deleteProduct(${i})">Delete</button>
+            </td>
+        </tr>`;
+
+        options += `<option value="${i}">${p.name}</option>`;
+        stockValue += p.buy * p.stock;
+        potentialRevenue += p.sell * p.stock;
+    });
+
+    document.getElementById('productTable').innerHTML = html;
+    document.getElementById('saleProduct').innerHTML = options;
+    document.getElementById('stockValue').innerText = stockValue;
+    document.getElementById('potentialRevenue').innerText = potentialRevenue;
+    document.getElementById('grossProfit').innerText = potentialRevenue - stockValue;
+	document.getElementById('alertsArea').innerHTML =
+    `<h3>Alerts</h3>` +
+    (alertsHTML || `<div class="alert alert-success">No alerts available</div>`);
+}
+
+function editProduct(i){
+    const p = products[i];
+
+    document.getElementById('name').value = p.name;
+    document.getElementById('category').value = p.category;
+    document.getElementById('buy').value = p.buy;
+    document.getElementById('sell').value = p.sell;
+    document.getElementById('stock').value = p.stock;
+    document.getElementById('expiry').value = p.expiry;
+
+    editDocId = p.id;
+}
+
+async function deleteProduct(i){
+    const { deleteDoc, doc } = window.firebaseFns;
+
+    if(confirm('Delete this product?')){
+        await deleteDoc(doc(window.db, "products", products[i].id));
+        loadProducts();
+    }
+}
+
+async function sellProduct(){
+    const { addDoc, collection, doc, updateDoc } = window.firebaseFns;
+
+    const i = Number(document.getElementById('saleProduct').value);
+    const qty = Number(document.getElementById('saleQty').value);
+
+    if(products[i].stock < qty){
+        return alert('Insufficient stock');
+    }
+
+    const newStock = products[i].stock - qty;
+
+    await updateDoc(doc(window.db, "products", products[i].id), {
+        stock: newStock
+    });
+
+    await addDoc(collection(window.db, "sales"), {
+        date: new Date().toLocaleString(),
+        product: products[i].name,
+        qty: qty,
+        total: products[i].sell * qty
+    });
+
+    await loadProducts();
+    await loadSales();
+
+generateAnalytics();
+}
+
+async function loadSales(){
+    const { collection, getDocs } = window.firebaseFns;
+
+    const querySnapshot = await getDocs(collection(window.db, "sales"));
+    sales = [];
+
+    querySnapshot.forEach((docSnap)=>{
+        sales.push({
+            id: docSnap.id,
+            ...docSnap.data()
+        });
+    });
+
+    let html = '';
+    let total = 0;
+
+    sales.forEach((s,i)=>{
+        html += `
+        <tr>
+            <td>${s.date}</td>
+            <td>${s.product}</td>
+            <td>${s.qty}</td>
+            <td>${s.total}</td>
+            <td>
+                <button class="delete-btn" onclick="deleteSale(${i})">Delete</button>
+            </td>
+        </tr>`;
+        total += s.total;
+    });
+
+    document.getElementById('salesTable').innerHTML = html;
+    document.getElementById('dailySales').innerText = total;
+    document.getElementById('weeklySales').innerText = total;
+    document.getElementById('monthlySales').innerText = total;
+}
+
+function generateAnalytics(){
+
+    let salesMap = {};
+
+    sales.forEach(s => {
+
+        if(!salesMap[s.product]){
+            salesMap[s.product] = 0;
+        }
+
+        salesMap[s.product] += Number(s.qty);
+    });
+
+    let fastHTML = '';
+    let slowHTML = '';
+    let recommendationHTML = '';
+    let alertsHTML = '';
+
+    products.forEach(p => {
+
+        const totalSold = salesMap[p.name] || 0;
+
+        // FAST MOVING
+        if(totalSold >= 20){
+
+            fastHTML += `
+            <tr>
+                <td>${p.name}</td>
+                <td>${totalSold}</td>
+                <td style="color:green;font-weight:bold;">
+                    Fast Moving
+                </td>
+            </tr>`;
+        }
+
+        // SLOW MOVING
+        if(totalSold < 5){
+
+            slowHTML += `
+            <tr>
+                <td>${p.name}</td>
+                <td>${totalSold}</td>
+                <td style="color:red;font-weight:bold;">
+                    Slow Moving
+                </td>
+            </tr>`;
+        }
+
+        // PREDICTION LOGIC
+        let estimatedMonthlySales = totalSold;
+
+        let recommendedPurchase = 0;
+
+        if(p.stock < estimatedMonthlySales){
+
+            recommendedPurchase =
+                (estimatedMonthlySales * 2) - p.stock;
+        }
+
+        // STOCKOUT DAYS
+        let dailyAverage = estimatedMonthlySales / 30;
+
+        let daysRemaining = dailyAverage > 0
+            ? Math.round(p.stock / dailyAverage)
+            : 999;
+
+        let risk = "Low";
+
+        if(daysRemaining <= 7){
+            risk = "High";
+        } else if(daysRemaining <= 15){
+            risk = "Medium";
+        }
+
+        recommendationHTML += `
+        <tr>
+            <td>${p.name}</td>
+            <td>${p.stock}</td>
+            <td>${estimatedMonthlySales}</td>
+            <td>${recommendedPurchase}</td>
+            <td>${risk}</td>
+        </tr>`;
+
+        // ALERTS
+        if(risk === "High"){
+
+            alertsHTML += `
+            <div class="alert alert-danger">
+                ${p.name} may run out in
+                ${daysRemaining} days.
+                Recommended purchase:
+                ${recommendedPurchase}
+            </div>`;
+        }
+    });
+
+    if(!alertsHTML){
+        alertsHTML =
+        `<div class="alert alert-success">
+            No stockout risk detected
+        </div>`;
+    }
+
+    document.getElementById('fastMovingTable')
+        .innerHTML = fastHTML;
+
+    document.getElementById('slowMovingTable')
+        .innerHTML = slowHTML;
+
+    document.getElementById('recommendationTable')
+        .innerHTML = recommendationHTML;
+
+    document.getElementById('predictionAlerts')
+        .innerHTML = alertsHTML;
+}
+
+async function deleteSale(i){
+    const { deleteDoc, doc } = window.firebaseFns;
+
+    if(confirm('Delete this sale?')){
+        await deleteDoc(doc(window.db, "sales", sales[i].id));
+        loadSales();
+    }
+}
+
+function backupData(){
+    const data = {products,sales};
+    const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'dh_backup.json';
+    a.click();
+}
+
+function restoreData(event){
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(){
+        const data = JSON.parse(reader.result);
+        localStorage.setItem('products', JSON.stringify(data.products));
+        localStorage.setItem('sales', JSON.stringify(data.sales));
+        loadProducts();
+        loadSales();
+    }
+
+    reader.readAsText(file);
+}
+function sendWhatsAppAlerts(){
+
+    let salesMap = {};
+
+    sales.forEach(s => {
+
+        if(!salesMap[s.product]){
+            salesMap[s.product] = 0;
+        }
+
+        salesMap[s.product] += Number(s.qty);
+    });
+
+    let message =
+`DH PHARMACY STOCK ALERTS
+
+`;
+
+    products.forEach(p => {
+
+        const totalSold = salesMap[p.name] || 0;
+
+        let dailyAverage = totalSold / 30;
+
+        let daysRemaining = dailyAverage > 0
+            ? Math.round(p.stock / dailyAverage)
+            : 999;
+
+        let recommendedPurchase = 0;
+
+        if(p.stock < totalSold){
+            recommendedPurchase =
+                (totalSold * 2) - p.stock;
+        }
+
+        // LOW STOCK
+        if(p.stock <= 5){
+
+            message +=
+`LOW STOCK:
+${p.name}
+Current Stock: ${p.stock}
+
+`;
+        }
+
+        // STOCKOUT RISK
+        if(daysRemaining <= 7){
+
+            message +=
+`STOCKOUT RISK:
+${p.name}
+Remaining Days: ${daysRemaining}
+Recommended Purchase: ${recommendedPurchase}
+
+`;
+        }
+
+        // EXPIRY ALERT
+        if(p.expiry){
+
+            const today = new Date();
+
+            const expiryDate =
+                new Date(p.expiry);
+
+            const daysLeft =
+                Math.ceil(
+                    (expiryDate - today)
+                    / (1000*60*60*24)
+                );
+
+            if(daysLeft <= 30 && daysLeft >= 0){
+
+                message +=
+`EXPIRY ALERT:
+${p.name}
+Expires in ${daysLeft} days
+
+`;
+            }
+        }
+    });
+
+    if(message ===
+`DH PHARMACY STOCK ALERTS
+
+`){
+
+        message +=
+`No urgent alerts detected.`;
+    }
+
+    const encodedMessage =
+        encodeURIComponent(message);
+
+    const whatsappURL =
+`https://wa.me/${pharmacyWhatsAppNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
+}
+</script>
+</body>
+</html>
